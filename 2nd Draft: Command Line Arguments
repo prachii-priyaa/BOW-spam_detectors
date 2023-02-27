@@ -1,0 +1,49 @@
+import sys
+import pickle
+import pandas as pd
+from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.svm import SVC
+
+# Check if training or testing argument is passed
+if len(sys.argv) > 1 and sys.argv[1] == "train":
+    # Load training data from CSV file
+    df = pd.read_csv("mail_data.csv")
+    emails = df["email_content"].values
+    labels = df["label"].values
+
+    # Tokenize and create a vocabulary of words
+    vectorizer = CountVectorizer(stop_words='english')
+    vectors = vectorizer.fit_transform(emails)
+    vocab = vectorizer.get_feature_names()
+
+    # Train a support vector machine
+    clf = SVC()
+    clf.fit(vectors, labels)
+
+    # Save the trained model to a file using pickle
+    with open('spam_classifier_model.pkl', 'wb') as f:
+        pickle.dump(clf, f)
+        print("Model saved successfully!")
+elif len(sys.argv) > 1 and sys.argv[1] == "test":
+    # Load the saved model from a file
+    with open('spam_classifier_model.pkl', 'rb') as f:
+        clf = pickle.load(f)
+
+    # Load testing data from CSV file
+    df = pd.read_csv(sys.argv[2])
+    test_emails = df["email_content"].values
+
+    # Tokenize the test emails
+    test_vectors = vectorizer.transform(test_emails)
+
+    # Test the classifier on new emails
+    predictions = clf.predict(test_vectors)
+
+    # Print the predictions
+    for prediction in predictions:
+        if prediction == 1:
+            print("This is a spam email")
+        else:
+            print("This is not a spam email")
+else:
+    print("Please provide a valid argument: train or test")
