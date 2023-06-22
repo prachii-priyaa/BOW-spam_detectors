@@ -46,7 +46,7 @@ def save_urls_to_csv(url_list, output_file):
     print(f'{len(url_list)} URLs saved to {output_file}')
 
 # Set the number of pages to extract
-num_pages = 100
+num_pages = 10
 
 # Extract the invalid URLs from all pages of Phish Search
 invalid_urls = extract_invalid_urls(num_pages)
